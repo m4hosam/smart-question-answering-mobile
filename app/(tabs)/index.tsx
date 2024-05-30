@@ -26,52 +26,15 @@ export default function HomeScreen() {
           }}
         >
           <FeatureButton
-            title="Memory Game"
-            route="/memory-game"
+            title="Sign in"
+            route="/sign-in"
             icon={<Entypo name="game-controller" size={35} color="black" />}
           />
           <FeatureButton
-            title="Audio"
-            route="/audio"
+            title="Sign-up"
+            route="/sign-up"
             icon={<FontAwesome name="music" size={35} color="black" />}
           />
-          <FeatureButton
-            title="Videos"
-            route="/video-skills"
-            icon={<Entypo name="video" size={35} color="black" />}
-          />
-          <FeatureButton
-            title="Medication"
-            route="/medication"
-            icon={<AntDesign name="medicinebox" size={35} color="black" />}
-          />
-          <FeatureButton
-            title="Heart"
-            route="/heart"
-            icon={<FontAwesome name="heartbeat" size={24} color="black" />}
-          />
-          <FeatureButton
-            title="Location"
-            route="/location"
-            icon={<Entypo name="location-pin" size={24} color="black" />}
-          />
-
-          {/* <Link className="bg-blue-300 text-2xl text-center" href="/test">
-            d
-          </Link>
-          <Button
-            title="Memory Game"
-            onPress={() => router.push("/memory-game")}
-          />
-          <Button title="Audio" onPress={() => router.push("/audio")} />
-          <Button
-            title="Manual Skill"
-            onPress={() => router.push("/video-skills")}
-          />
-          <Button
-            title="Medication"
-            onPress={() => router.push("/medication")}
-          /> */}
         </View>
       </ScrollView>
     </SafeAreaView>
