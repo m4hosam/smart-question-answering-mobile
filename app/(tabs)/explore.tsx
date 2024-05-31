@@ -9,13 +9,25 @@ import {
   Text,
   Button,
 } from "react-native";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
 import { AntDesign, FontAwesome, Entypo } from "@expo/vector-icons";
 import FeatureButton from "@/components/FeatureButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem("token");
+      console.log("token: ", token);
+      setIsAuthenticated(!!token);
+    };
+
+    checkAuth();
+  }, []);
   return (
     <SafeAreaView className=" h-full">
       <ScrollView>
