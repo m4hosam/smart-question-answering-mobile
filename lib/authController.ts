@@ -38,8 +38,9 @@ export async function register(email: string, password: string, name: string) {
     if (createdUserResponse?.status === 200) {
       // console.log("createUserStatus: ", createUserStatus?.success)
       console.log("createdUserResponse: ", createdUserResponse);
-      // await AsyncStorage.setItem('token', createdUserResponse?.data?.token);
+      await AsyncStorage.setItem("token", createdUserResponse?.data?.token);
       // console.log("signInResponse.error: ", signInResponse?.error)
+      return createdUserResponse;
     } else {
       return createdUserResponse;
     }
@@ -104,6 +105,17 @@ export async function getUser(email: string) {
     // console.log("getuser: ", response.data)
     // returns true if user exists, false if not
     return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function signOut() {
+  try {
+    await AsyncStorage.setItem("token", "");
+    // console.log("getuser: ", response.data)
+    // returns true if user exists, false if not
   } catch (error) {
     console.log(error);
     throw error;

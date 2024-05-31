@@ -102,11 +102,11 @@ export default function HomeScreen() {
             minHeight: Dimensions.get("window").height - 100,
           }}
         > */}
-        <FeatureButton
+        {/* <FeatureButton
           title="Sign in"
           route="/sign-in"
           icon={<Entypo name="game-controller" size={35} color="black" />}
-        />
+        /> */}
         {/* </View> */}
         <View style={styles.uploadContainer}>
           <Button title="Pick an image from camera roll" onPress={pickImage} />
@@ -180,7 +180,8 @@ const styles = StyleSheet.create({
   },
   uploadContainer: {
     alignItems: "center",
-    marginVertical: 20,
+    marginBottom: 30,
+    marginTop: 60,
   },
   previewImage: {
     width: 200,

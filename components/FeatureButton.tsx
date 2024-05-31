@@ -15,13 +15,13 @@ const FeatureButton = ({ title, route, icon }: FeatureButtonProps) => {
   return (
     <TouchableOpacity
       onPress={() => router.push(route)}
-      className="w-36 h-36 p-5 bg-blue-300 m-2  flex flex-col items-center justify-center rounded-xl"
+      className="w-40 p-2 bg-blue-300 m-2   flex flex-row items-center justify-center rounded-xl"
       // disabled={isLoading}
     >
       {/* <Entypo name="video" size={50} color="orange" /> */}
       {/* <Entypo name="game-controller" size={24} color="black" /> */}
       {icon}
-      <Text className="text-lg font-bold text-center">{title}</Text>
+      <Text className="text-lg font-bold text-center ml-5">{title}</Text>
     </TouchableOpacity>
   );
 };
