@@ -8,7 +8,7 @@ export async function createQuestion(userQuestion: {
 }) {
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}question`,
+      `${process.env.EXPO_PUBLIC_API_URL}question`,
       userQuestion,
       {
         headers: {
@@ -38,7 +38,7 @@ export async function createQurestionFromImage(image: File, token: string) {
     // console.log("createQurestionFromImage: ", image);
 
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}question/image`,
+      `${process.env.EXPO_PUBLIC_API_URL}question/image`,
       formData,
       {
         headers: {
@@ -91,8 +91,9 @@ export async function extractQurestionFromImage(image: File) {
 export async function getAllQuestions() {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}question`
+      `${process.env.EXPO_PUBLIC_API_URL}question`
     );
+    // console.log("getAllQuestions: ", response?.data);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -109,7 +110,7 @@ export async function getAllQuestions() {
 export async function getMyQuestions(token: string) {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}question/user`,
+      `${process.env.EXPO_PUBLIC_API_URL}question/user`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -132,7 +133,7 @@ export async function getMyQuestions(token: string) {
 export async function getQuestionById(id: string) {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}question/${id}`
+      `${process.env.EXPO_PUBLIC_API_URL}question/${id}`
     );
     return response;
   } catch (error) {
@@ -150,7 +151,7 @@ export async function getQuestionById(id: string) {
 export async function getTeacherQuestions(token: string) {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}question/teacher`,
+      `${process.env.EXPO_PUBLIC_API_URL}question/teacher`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -173,7 +174,7 @@ export async function getTeacherQuestions(token: string) {
 export async function deleteQuestion(id: string, token: string) {
   try {
     const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_API_URL}question/${id}`,
+      `${process.env.EXPO_PUBLIC_API_URL}question/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -13,7 +13,7 @@ export async function createAnswer(
     console.log(token);
 
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}answer`,
+      `${process.env.EXPO_PUBLIC_API_URL}answer`,
       answer,
       {
         headers: {

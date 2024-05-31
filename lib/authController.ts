@@ -10,7 +10,7 @@ export async function createUser(
 ) {
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}user`,
+      `${process.env.EXPO_PUBLIC_API_URL}user`,
       {
         email: email,
         password: password,
@@ -54,7 +54,7 @@ export async function autherizeUser(email: string, password: string) {
   // password should be hashed before calling this function
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}user/login`,
+      `${process.env.EXPO_PUBLIC_API_URL}user/login`,
       {
         email: email,
         password: password,
@@ -82,7 +82,7 @@ export async function login(email: string, password: string) {
     // if user autherized {user: {email, name}} else {user: {}},
     if (autherizedUserResponse?.status === 200) {
       console.log("autherizedUserResponse: ", autherizedUserResponse);
-      // await AsyncStorage.setItem('token', autherizedUserResponse?.data?.token);
+      await AsyncStorage.setItem("token", autherizedUserResponse?.data?.token);
       // console.log("signInResponse.error: ", signInResponse?.error)
       return autherizedUserResponse;
     }
@@ -99,7 +99,7 @@ export async function login(email: string, password: string) {
 export async function getUser(email: string) {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}user/${email}`
+      `${process.env.EXPO_PUBLIC_API_URL}user/${email}`
     );
     // console.log("getuser: ", response.data)
     // returns true if user exists, false if not

@@ -13,10 +13,13 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
+import { login } from "@/lib/authController";
+import { useRouter } from "expo-router";
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -24,16 +27,21 @@ const LoginScreen = () => {
       return;
     }
     try {
-      const response = await axios.post(
-        "https://smart-question-answering-backend.vercel.app",
-        {
-          email,
-          password,
+      const loginResponse = await login(email, password);
+      if (loginResponse?.status === 200) {
+        // Authentication success
+        if (loginResponse.data.role === "teacher") {
+          router.push("/teacher");
+        } else if (loginResponse.data.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/");
         }
-      );
+      } else {
+        // 401 not autherized
+        Alert.alert("Not Autherized", loginResponse?.data);
+      }
 
-      const { token } = response.data;
-      console.log(token);
       // Store the token securely
       //   await AsyncStorage.setItem('token', token);
       // Navigate to the main app

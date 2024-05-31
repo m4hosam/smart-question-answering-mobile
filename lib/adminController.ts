@@ -3,7 +3,7 @@ import { UserUpdate } from "../types/common.types";
 // get all user Admin only
 export async function getAllUsers(token: string) {
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}user`, {
+    const response = await axios.get(`${process.env.EXPO_PUBLIC_API_URL}user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -25,7 +25,7 @@ export async function getAllUsers(token: string) {
 export async function getUserById(id: string, token: string) {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}user/${id}`,
+      `${process.env.EXPO_PUBLIC_API_URL}user/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ export async function updateUserById(
 ) {
   try {
     const response = await axios.put(
-      `${process.env.NEXT_PUBLIC_API_URL}user/${id}`,
+      `${process.env.EXPO_PUBLIC_API_URL}user/${id}`,
       user,
       {
         headers: {
