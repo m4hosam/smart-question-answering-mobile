@@ -60,22 +60,32 @@ export async function createQurestionFromImage(image: File, token: string) {
   }
 }
 
-export async function extractQurestionFromImage(image: File) {
+export async function extractQuestionFromImage(imageUri: string) {
   try {
     const formData = new FormData();
-    formData.append("image", image);
+    formData.append("image", {
+      uri: imageUri,
+      type: "image/jpeg", // Ensure you specify the correct image type
+      name: "photo.jpg",
+    } as any);
     // console.log("createQurestionFromImage: ", image);
 
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_OCR_API_URL}image`,
-      formData,
-      {
+    const response = await axios
+      .post(`${process.env.EXPO_PUBLIC_OCR_API_URL}image`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
         timeout: 70000, // Set the timeout to 70 seconds (in milliseconds)
-      }
-    );
+      })
+      .then((response) => {
+        // console.log("extractQurestionFromImage response: ", response.data);
+        return response;
+      })
+      .catch((error) => {
+        // console.log("extractQurestionFromImage error: ", error);
+        return error;
+      });
+    // console.log("extractQurestionFromImage response: ");
     // console.log("extractQurestionFromImage response: ", response);
     return response;
   } catch (error) {

@@ -7,6 +7,7 @@ import {
   View,
   ScrollView,
   Text,
+  Alert,
   Button,
   ActivityIndicator,
 } from "react-native";
@@ -18,6 +19,12 @@ import FeatureButton from "@/components/FeatureButton";
 import { getAllQuestions } from "@/lib/questionController";
 import { Question } from "@/types/common.types";
 import * as ImagePicker from "expo-image-picker";
+import {
+  extractQuestionFromImage,
+  createQuestion,
+} from "@/lib/questionController";
+import { cloudinary_upload } from "@/lib/cloudinary";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -25,21 +32,20 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const questionsResponse = await getAllQuestions();
-        let questions: Question[] = [];
-        if (questionsResponse?.status === 200) {
-          setQuestions(questionsResponse.data);
-        }
-      } catch (error) {
-        console.error("Error fetching questions:", error);
-      } finally {
-        setLoading(false);
+  const fetchQuestions = async () => {
+    try {
+      const questionsResponse = await getAllQuestions();
+      let questions: Question[] = [];
+      if (questionsResponse?.status === 200) {
+        setQuestions(questionsResponse.data);
       }
-    };
-
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchQuestions();
   }, []);
   const pickImage = async () => {
@@ -56,27 +62,48 @@ export default function HomeScreen() {
   };
 
   const uploadImage = async () => {
-    if (!image) return;
+    if (!image) {
+      Alert.alert("Please select an image first");
+      return;
+    }
 
-    let localUri = image;
-    let filename = localUri.split("/").pop();
-    let match = /\.(\w+)$/.exec(filename!);
-    let type = match ? `image/${match[1]}` : `image`;
+    setLoading(true);
 
-    let formData = new FormData();
-    formData.append("photo", { uri: localUri, name: filename, type } as any);
+    try {
+      const extractionResponse = await extractQuestionFromImage(image);
 
-    // try {
-    //   const response = await axios.post("YOUR_UPLOAD_API_URL", formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   });
-    //   console.log("Image uploaded successfully:", response.data);
-    //   // Handle response after successful upload
-    // } catch (error) {
-    //   console.error("Error uploading image:", error);
-    // }
+      if (extractionResponse?.status !== 200) {
+        Alert.alert("Error in extracting text.");
+      } else {
+        const cloudinaryResponse = await cloudinary_upload(image);
+
+        const userQuestion = {
+          ...extractionResponse?.data,
+          question_image: cloudinaryResponse.url,
+          token: await AsyncStorage.getItem("token"),
+        };
+
+        const questionResponse = await createQuestion(userQuestion);
+
+        if (questionResponse?.status === 200) {
+          Alert.alert("Question added successfully.");
+          setImage(null);
+          fetchQuestions(); // Refresh the questions feed
+        } else if (questionResponse?.status === 409) {
+          Alert.alert("Error saving question.");
+          console.log(questionResponse.data.similarQuestions);
+        } else if (questionResponse?.status === 403) {
+          Alert.alert("Not authorized.");
+        } else {
+          Alert.alert("Error in saving question.");
+        }
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      Alert.alert("Upload failed", (error as string) || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -91,33 +118,41 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView>
-        {/* <View
-          style={{
-            width: "100%",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            paddingHorizontal: 16,
-            marginVertical: 24,
-            minHeight: Dimensions.get("window").height - 100,
-          }}
-        > */}
-        {/* <FeatureButton
-          title="Sign in"
-          route="/sign-in"
-          icon={<Entypo name="game-controller" size={35} color="black" />}
-        /> */}
-        {/* </View> */}
+        <TouchableOpacity
+          onPress={() => router.push("/teacher")}
+          className="flex flex-row items-center justify-center bg-green-400 rounded-lg p-2 m-5"
+        >
+          <FontAwesome name="user" size={24} color="black" />
+          <Text className="ml-5">Go to Teacher</Text>
+        </TouchableOpacity>
         <View style={styles.uploadContainer}>
-          <Button title="Pick an image from camera roll" onPress={pickImage} />
+          {/* <Button title="Pick an image from camera roll" onPress={pickImage} /> */}
+          <TouchableOpacity
+            onPress={pickImage}
+            className="flex flex-row items-center justify-center bg-blue-400 rounded-lg w-[80%] p-3 m-5"
+          >
+            <Entypo name="upload-to-cloud" size={24} color="black" />
+            <Text className="ml-5 text-lg">Upload an Image</Text>
+          </TouchableOpacity>
           {image && (
-            <Image source={{ uri: image }} style={styles.previewImage} />
+            <>
+              <Image source={{ uri: image }} style={styles.previewImage} />
+              <View className=" flex flex-row items-center justify-between">
+                <TouchableOpacity
+                  onPress={uploadImage}
+                  className="flex flex-row items-center justify-center bg-green-400 rounded-lg  py-2 px-5 mx-3"
+                >
+                  <Text className="">Submit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setImage(null)}
+                  className="flex flex-row items-center justify-center bg-red-500 rounded-lg  py-2  px-5 mx-3"
+                >
+                  <Text className=" ">Clear</Text>
+                </TouchableOpacity>
+              </View>
+            </>
           )}
-          <Button
-            title="Upload Image"
-            onPress={uploadImage}
-            disabled={!image}
-          />
         </View>
 
         <View style={styles.questionsContainer}>

@@ -39,6 +39,7 @@ export async function register(email: string, password: string, name: string) {
       // console.log("createUserStatus: ", createUserStatus?.success)
       console.log("createdUserResponse: ", createdUserResponse);
       await AsyncStorage.setItem("token", createdUserResponse?.data?.token);
+      await AsyncStorage.setItem("role", createdUserResponse?.data?.role);
       // console.log("signInResponse.error: ", signInResponse?.error)
       return createdUserResponse;
     } else {
@@ -84,6 +85,7 @@ export async function login(email: string, password: string) {
     if (autherizedUserResponse?.status === 200) {
       console.log("autherizedUserResponse: ", autherizedUserResponse);
       await AsyncStorage.setItem("token", autherizedUserResponse?.data?.token);
+      await AsyncStorage.setItem("role", autherizedUserResponse?.data?.role);
       // console.log("signInResponse.error: ", signInResponse?.error)
       return autherizedUserResponse;
     }

@@ -34,7 +34,13 @@ export default function HomeScreen() {
   const fetchQuestions = async (token: string) => {
     try {
       const questionsResponse = await getMyQuestions(token);
-      setQuestions(questionsResponse?.data);
+      if (questionsResponse?.status !== 200) {
+        console.log("questionsResponse: ", questionsResponse?.data);
+        Alert.alert("Error", "Unautherized user, please sign in again.");
+      } else {
+        // console.log("questionsResponse: ", questionsResponse);
+        setQuestions(questionsResponse?.data);
+      }
     } catch (error) {
       console.error("Error fetching questions:", error);
     } finally {
@@ -78,7 +84,9 @@ export default function HomeScreen() {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem("token");
       console.log("token: ", token);
+      setLoading(false);
       if (!token) {
+        setIsAuthenticated(false);
         router.push("/sign-in");
       } else {
         setIsAuthenticated(true);
@@ -89,7 +97,7 @@ export default function HomeScreen() {
     checkAuth();
   }, []);
 
-  if (isAuthenticated === null || loading) {
+  if (isAuthenticated === null) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -139,7 +147,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <View style={styles.questionsContainer}>
-            {questions.map((question) => (
+            {questions?.map((question) => (
               <View key={question.id} style={styles.card}>
                 <Image
                   source={{ uri: question.questionImage }}
