@@ -25,6 +25,7 @@ import {
 } from "@/lib/questionController";
 import { cloudinary_upload } from "@/lib/cloudinary";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import QuestionCard from "@/components/QuestionCard";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -157,20 +158,7 @@ export default function HomeScreen() {
 
         <View style={styles.questionsContainer}>
           {questions.map((question) => (
-            <View key={question.id} style={styles.card}>
-              <Image
-                source={{ uri: question.questionImage }}
-                style={styles.image}
-              />
-              <Text style={styles.questionText}>{question.question}</Text>
-              {question.Answer.length > 0 ? (
-                <Text style={styles.answerText}>
-                  Answer: {question.Answer[0].answer}
-                </Text>
-              ) : (
-                <Text style={styles.answerText}>No answer yet</Text>
-              )}
-            </View>
+            <QuestionCard key={question.id} question={question} />
           ))}
         </View>
       </ScrollView>
@@ -216,7 +204,7 @@ const styles = StyleSheet.create({
   uploadContainer: {
     alignItems: "center",
     marginBottom: 30,
-    marginTop: 60,
+    marginTop: 10,
   },
   previewImage: {
     width: 200,

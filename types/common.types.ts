@@ -20,6 +20,17 @@ export type Question = {
   Answer: Answer[];
 };
 
+export type TeacherQuestion = {
+  id: string;
+  question: string;
+  category: string;
+  questionImage: string;
+  status: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type User = {
   id: string;
   name: string;

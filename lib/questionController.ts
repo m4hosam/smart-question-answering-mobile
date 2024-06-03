@@ -168,6 +168,7 @@ export async function getTeacherQuestions(token: string) {
         },
       }
     );
+    // console.log("getTeacherQuestions: ", response?.data);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
