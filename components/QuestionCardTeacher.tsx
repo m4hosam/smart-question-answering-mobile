@@ -1,5 +1,3 @@
-// components/QuestionCard.tsx
-
 import React, { useState } from "react";
 import {
   View,
@@ -7,38 +5,63 @@ import {
   Image,
   StyleSheet,
   TextInput,
-  Button,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import { Question } from "@/types/common.types";
-
-// import { submitAnswer } from '@/lib/questionController'; // Assume you have a function to submit the answer
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Question, TeacherQuestion } from "@/types/common.types";
+import { createAnswer } from "@/lib/answerController"; // Assume you have a function to submit the answer
 
 interface QuestionCardProps {
-  question: Question;
+  question: TeacherQuestion;
+  fetchQuestions: () => void; // Function to refresh the questions
 }
 
-const QuestionCardTeacher: React.FC<QuestionCardProps> = ({ question }) => {
+const QuestionCardTeacher: React.FC<QuestionCardProps> = ({
+  question,
+  fetchQuestions,
+}) => {
   const [answer, setAnswer] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async () => {
     if (!answer.trim()) {
-      Alert.alert("Answer cannot be empty");
+      Alert.alert("Answer can not be empty");
       return;
     }
 
-    // try {
-    //   const response = await submitAnswer(question.id, answer);
-    //   if (response.status === 200) {
-    //     Alert.alert('Answer submitted successfully');
-    //   } else {
-    //     Alert.alert('Failed to submit answer');
-    //   }
-    // } catch (error) {
-    //   console.error('Error submitting answer:', error);
-    //   Alert.alert('Error submitting answer');
-    // }
+    const teacherAnswer = {
+      question_id: question.id,
+      answer: answer,
+      answerImage: "",
+    };
+    const teacherToken = await AsyncStorage.getItem("token");
+    if (!teacherToken) {
+      Alert.alert("Unauthorized");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const answerResponse = await createAnswer(teacherAnswer, teacherToken);
+      if (answerResponse?.status === 200) {
+        Alert.alert("Answer added successfully");
+        setAnswer("");
+        fetchQuestions(); // Refresh the questions feed
+      } else {
+        Alert.alert(
+          "Error",
+          answerResponse?.data.message || "Failed to submit answer"
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting answer:", error);
+      Alert.alert("Error submitting answer");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,27 +70,23 @@ const QuestionCardTeacher: React.FC<QuestionCardProps> = ({ question }) => {
       <View style={styles.separator} />
       <Image source={{ uri: question.questionImage }} style={styles.image} />
       <Text style={styles.questionText}>{question.question}</Text>
-      {question.Answer.length > 0 ? (
-        <Text style={styles.answerText}>
-          Answer: {question.Answer[0].answer}
-        </Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Write your answer"
+        value={answer}
+        onChangeText={setAnswer}
+        editable={!loading}
+      />
+      {loading ? (
+        <ActivityIndicator size="small" color="#0000ff" />
       ) : (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Write your answer"
-            value={answer}
-            onChangeText={setAnswer}
-          />
-          <TouchableOpacity
-            onPress={handleSubmit}
-            className="flex flex-row items-center justify-center bg-green-400  rounded-lg  py-2 px-5"
-          >
-            <Text>Submit Answer</Text>
-          </TouchableOpacity>
-        </>
+        <TouchableOpacity
+          onPress={handleSubmit}
+          className="flex flex-row items-center justify-center bg-green-400 rounded-lg py-2 px-5"
+        >
+          <Text>Submit Answer</Text>
+        </TouchableOpacity>
       )}
-      {/* <Button title="Submit Answer" onPress={handleSubmit} /> */}
     </View>
   );
 };

@@ -5,17 +5,13 @@ import {
   View,
   ScrollView,
   Text,
-  Button,
   ActivityIndicator,
-  Touchable,
   Alert,
   TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { Entypo, FontAwesome } from "@expo/vector-icons";
-import FeatureButton from "@/components/FeatureButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMyQuestions, deleteQuestion } from "@/lib/questionController";
 import { Question } from "@/types/common.types";
@@ -28,6 +24,7 @@ export default function HomeScreen() {
 
   const handleSignOut = async () => {
     await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("role");
     setIsAuthenticated(false);
   };
 
@@ -80,20 +77,19 @@ export default function HomeScreen() {
     );
   };
 
+  const checkAuth = async () => {
+    const token = await AsyncStorage.getItem("token");
+    console.log("token: ", token);
+    setLoading(false);
+    if (!token) {
+      setIsAuthenticated(false);
+      router.push("/sign-in");
+    } else {
+      setIsAuthenticated(true);
+      fetchQuestions(token);
+    }
+  };
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = await AsyncStorage.getItem("token");
-      console.log("token: ", token);
-      setLoading(false);
-      if (!token) {
-        setIsAuthenticated(false);
-        router.push("/sign-in");
-      } else {
-        setIsAuthenticated(true);
-        fetchQuestions(token);
-      }
-    };
-
     checkAuth();
   }, []);
 
@@ -106,25 +102,34 @@ export default function HomeScreen() {
   }
 
   if (isAuthenticated === false) {
+    checkAuth();
     return (
       <SafeAreaView className=" h-full">
         <ScrollView>
           <View
             className="w-full flex flex-col flex-wrap justify-center items-center h-full px-4 my-6"
             style={{
-              minHeight: Dimensions.get("window").height - 100,
+              minHeight: Dimensions.get("window").height - 200,
             }}
           >
-            <FeatureButton
-              title="Sign in"
-              route="/sign-in"
-              icon={<FontAwesome name="sign-in" size={24} color="black" />}
-            />
-            <FeatureButton
-              title="Sign Up"
-              route="/sign-up"
-              icon={<FontAwesome name="sign-in" size={24} color="black" />}
-            />
+            <TouchableOpacity
+              onPress={() => router.push("/sign-in")}
+              className="w-full p-2 bg-sky-900 my-5  flex flex-row items-center justify-center rounded-xl"
+              // disabled={isLoading}
+            >
+              <Text className="text-lg font-bold text-center text-white">
+                Sign In
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("/sign-up")}
+              className="w-full p-2 bg-teal-400 my-3  flex flex-row items-center justify-center rounded-xl"
+              // disabled={isLoading}
+            >
+              <Text className="text-lg font-bold text-center text-teal-950">
+                Sign Up
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "smart-question-answering-mobile",
-    "slug": "smart-question-answering-mobile",
+    "name": "akilli-soru-cozum",
+    "slug": "akilli-soru-cozum",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

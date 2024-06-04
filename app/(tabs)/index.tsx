@@ -1,21 +1,17 @@
 import {
   Image,
   StyleSheet,
-  Platform,
-  Dimensions,
   TouchableOpacity,
   View,
   ScrollView,
   Text,
   Alert,
-  Button,
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, useRouter } from "expo-router";
-import { AntDesign, FontAwesome, Entypo } from "@expo/vector-icons";
-import FeatureButton from "@/components/FeatureButton";
+import { useRouter } from "expo-router";
+import { Entypo } from "@expo/vector-icons";
 import { getAllQuestions } from "@/lib/questionController";
 import { Question } from "@/types/common.types";
 import * as ImagePicker from "expo-image-picker";
@@ -91,12 +87,18 @@ export default function HomeScreen() {
           setImage(null);
           fetchQuestions(); // Refresh the questions feed
         } else if (questionResponse?.status === 409) {
-          Alert.alert("Error saving question.");
+          Alert.alert(
+            "Error",
+            questionResponse?.data.message || "Similar Question Found."
+          );
           console.log(questionResponse.data.similarQuestions);
         } else if (questionResponse?.status === 403) {
           Alert.alert("Not authorized.");
         } else {
-          Alert.alert("Error in saving question.");
+          Alert.alert(
+            "Error",
+            questionResponse?.data.message || "Error saving question."
+          );
         }
       }
     } catch (error) {
@@ -121,10 +123,9 @@ export default function HomeScreen() {
       <ScrollView>
         <TouchableOpacity
           onPress={() => router.push("/teacher")}
-          className="flex flex-row items-center justify-center bg-green-400 rounded-lg p-2 m-5"
+          className="flex flex-row items-center justify-center bg-slate-900  p-2 "
         >
-          <FontAwesome name="user" size={24} color="black" />
-          <Text className="ml-5">Go to Teacher</Text>
+          <Text className="text-lg font-semibold text-white">Teacher</Text>
         </TouchableOpacity>
         <View style={styles.uploadContainer}>
           {/* <Button title="Pick an image from camera roll" onPress={pickImage} /> */}

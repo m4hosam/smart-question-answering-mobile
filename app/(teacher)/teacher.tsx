@@ -1,23 +1,16 @@
 import {
-  Image,
   StyleSheet,
-  Dimensions,
   View,
   ScrollView,
   Text,
-  Button,
   ActivityIndicator,
   Alert,
-  TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Entypo, FontAwesome } from "@expo/vector-icons";
-import FeatureButton from "@/components/FeatureButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAllQuestions, getTeacherQuestions } from "@/lib/questionController";
-import { Question, TeacherQuestion } from "@/types/common.types";
+import {  getTeacherQuestions } from "@/lib/questionController";
+import {  TeacherQuestion } from "@/types/common.types";
 import RNPickerSelect from "react-native-picker-select";
 import QuestionCardTeacher from "@/components/QuestionCardTeacher";
 
@@ -36,7 +29,7 @@ const categories = [
 
 const Teacher = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<TeacherQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
 
@@ -44,10 +37,11 @@ const Teacher = () => {
     const teacherToken = await AsyncStorage.getItem("token");
     if (!teacherToken) {
       Alert.alert("Unautherized");
+      setLoading(false);
       return;
     }
     try {
-      const questionsResponse = await getAllQuestions();
+      const questionsResponse = await getTeacherQuestions(teacherToken);
       if (questionsResponse?.status === 200) {
         setQuestions(questionsResponse?.data);
       }
@@ -73,10 +67,8 @@ const Teacher = () => {
   }, []);
 
   const filteredQuestions = selectedCategory
-    ? questions
-        .filter((question) => question.category === selectedCategory)
-        .sort((a, b) => (a.Answer.length === 0 ? -1 : 1))
-    : questions.sort((a, b) => (a.Answer.length === 0 ? -1 : 1));
+    ? questions.filter((question) => question.category === selectedCategory)
+    : questions;
 
   if (loading) {
     return (
@@ -97,7 +89,7 @@ const Teacher = () => {
   return (
     <SafeAreaView>
       <ScrollView>
-        <View className="w-full px-4 my-6">
+        <View className="w-full px-4 mb-6">
           <Text style={styles.label}>Select Category:</Text>
           <RNPickerSelect
             onValueChange={(value) => setSelectedCategory(value)}
@@ -111,7 +103,11 @@ const Teacher = () => {
             <ActivityIndicator size="large" color="#0000ff" />
           ) : (
             filteredQuestions.map((question) => (
-              <QuestionCardTeacher key={question.id} question={question} />
+              <QuestionCardTeacher
+                key={question.id}
+                question={question}
+                fetchQuestions={fetchQuestions}
+              />
             ))
           )}
         </View>
