@@ -1,0 +1,42 @@
+{
+  "cli": {
+    "version": ">= 3.10.2"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://smart-question-answering-backend.vercel.app/",
+        "EXPO_PUBLIC_OCR_API_URL": "https://classify-easyocr-pldyyryzwa-lm.a.run.app/",
+        "EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME": "drhvdnjmx"
+      }
+    },
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
+      "distribution": "internal"
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://smart-question-answering-backend.vercel.app/",
+        "EXPO_PUBLIC_OCR_API_URL": "https://classify-easyocr-pldyyryzwa-lm.a.run.app/",
+        "EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME": "drhvdnjmx"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

@@ -83,7 +83,7 @@ export default function HomeScreen() {
     setLoading(false);
     if (!token) {
       setIsAuthenticated(false);
-      router.push("/sign-in");
+      // router.push("/sign-in");
     } else {
       setIsAuthenticated(true);
       fetchQuestions(token);
